@@ -13,14 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 
-Route::resource('posts', 'PostController');
-Route::get('/posts/{post}/ref={login}', 'PostController@ref')->name('post.ref');
-Route::get('/ref={login}', 'HomeController@ref')->name('ref.home');
+Route::resource('posts', 'PostController', ["except" => 'show']);
+# это и есть posts.show
+Route::get('/posts/{id}/', 'PostController@ref')->name('post.ref');
+# это так же и главная страница
+Route::get('/', 'HomeController@ref')->name('ref.home');

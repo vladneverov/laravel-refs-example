@@ -43,19 +43,6 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        return view('posts.show', [
-            'post' => Post::find($id)
-        ]);
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -89,23 +76,37 @@ class PostController extends Controller
         //
     }
 
-    public function ref($id, $login)
+    public function ref($id, Request $request)
     {
-        $user = User::where('login', $login)->first();
-        $post = Post::find($id);
+        # здесь запрос /?ref={login}
+        $login = $request->query('ref');
 
-        # если нет в базе, редиректим на home
-        if ( ! $user ) return redirect()->route('home');
-        # если нет в базе, редиректим на home
-        if ( ! $post ) return redirect()->route('home');
-        # если авторизован, редиректим на home
-        if ( Auth::user() && Auth::user()->id === $user->id ) {
+        # если есть запрос ?ref
+        if ( $login )
+        {
+            $user = User::where('login', $login)->first();
+            $post = Post::find($id);
+
+            # если нет в базе, редиректим на home
+            if ( ! $user ) return redirect()->route('home');
+            # если нет в базе, редиректим на home
+            if ( ! $post ) return redirect()->route('home');
+            # если авторизован, редиректим на home
+            if ( Auth::user()
+              && Auth::user()->id === $user->id )
+            {
+                return redirect()->route('home');
+            }
+
+            $user->count++;
+            $user->save();
+    
             return redirect()->route('home');
         }
 
-        $user->count++;
-        $user->save();
-   
-        return redirect()->route('home');
+        # показать полный пост
+        return view('posts.show', [
+            'post' => Post::find($id)
+        ]);
     }
 }

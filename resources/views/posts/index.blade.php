@@ -25,7 +25,7 @@
                         <td>{{ $post->title }}</td>
                         <td>{{ $post->description }}</td>
                         <td class="table-buttons">
-                            <a href="{{ route('posts.show', $post) }}" class="btn btn-success">
+                            <a href="{{ route('post.ref', $post) }}" class="btn btn-success">
                               Просмотр
                             </a>
                         </td>

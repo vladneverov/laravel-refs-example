@@ -18,20 +18,32 @@ class HomeController extends Controller
         return view('home');
     }
 
-    public function ref($login)
+    public function ref(Request $request)
     {
-        $user = User::where('login', $login)->first();
+        # здесь запрос /?ref={login}
+        $login = $request->query('ref');
 
-        # если нет в базе, редиректим на home
-        if ( ! $user ) return redirect()->route('home');
-        # если авторизован, редиректим на home
-        if ( Auth::user() && Auth::user()->id === $user->id ) {
+        # если есть запрос ?ref
+        if ( $login )
+        {
+            $user = User::where('login', $login)->first();
+
+            # если нет в базе, редиректим на home
+            if ( ! $user ) return redirect()->route('home');
+            # если авторизован, редиректим на home
+            if ( Auth::user()
+              && Auth::user()->id === $user->id )
+            {
+                return redirect()->route('home');
+            }
+
+            $user->count++;
+            $user->save();
+    
             return redirect()->route('home');
         }
 
-        $user->count++;
-        $user->save();
-   
-        return redirect()->route('home');
+        # показать страницу приветствия
+        return view('welcome');
     }
 }
